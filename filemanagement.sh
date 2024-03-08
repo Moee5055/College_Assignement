@@ -1,33 +1,31 @@
 #Start of the program
 
+#$ Note !! filename indicates full path to file or Directory
+
 #start of the methods
+
 #this function create new directory
 create_directory() {
     local filename=$1
     mkdir "$filename"
-    echo -e "\nSucessfully create new Directory name $filename"
+    echo -e "\nSucessfully create new Directory in path $filename"
 }
 
 #this function lists content of a directory
 list_content() {
     local filename=$1
-    echo -e "\n"
-    read -p "Enter path of Directory or File : " path
-    absolute_path="${path}"
-    echo -e "\nListing Content inside Directory $filename\n"
-    ls "$absolute_path"
+    echo -e "\nListing Content of Directory in path $filename\n"
+    ls "$filename"
 }
 
 #thi function create an empty file
 create_file() {
     local filename=$1
-    echo -e "\nWait a minute...\nEnter path to create your new file\n"
-    read -p "Path to create new file : " path
-    touch "${path}${filename}"
-    absolute_path="${path}${filename}"
+    echo -e "\nWait a minute...\n"
+    touch "${filename}"
    
-    if [ -e "$absolute_path" ]; then {
-      echo -e "\nSucessfully created new File name $filename in $path"
+    if [ -e "$filename" ]; then {
+      echo -e "\nSucessfully created new File name in path $filename "
     } else
       echo -e "\n....... Failed to create new file."
     fi
@@ -37,13 +35,13 @@ create_file() {
 edit_file() {
     local filename=$1
     nano "$filename"
-    echo -e "\nSucessfully edited file name $filename"
+    echo -e "\nSucessfully edited file in path $filename"
 }
 
 #this file display content of a file
 display_content() {
     local filename=$1
-    echo -e "\nDisplaying Content of File name $filename\n"
+    echo -e "\nDisplaying Content of file in path $filename\n"
     cat "$filename"
 }
 
@@ -51,14 +49,14 @@ display_content() {
 delete_file() {
     local filename=$1
     rm "$filename"
-    echo -e "\n$filename file is deleted"
+    echo -e "\nfile in path $filename is deleted."
 }
 
 #this function delete a directory
 delete_dir() {
     local filename=$1
     rmdir "$filename"
-    echo -e "\n$filename Directory is Deleted"
+    echo -e "\nDirectory in path $filename is Deleted"
 }
 
 #List of operations
@@ -78,7 +76,8 @@ list_operation() {
 #read input from users
 read_input() {
     read -p "Enter the Operation: " input
-    read -p "Enter file or Directory name: " file_name
+    echo -e "Current Location $(pwd)\n"
+    read -p "Enter full path to file or directory: " file_name
     operation_check $file_name $input
 }
 
@@ -133,45 +132,44 @@ operation_check() {
 check_file() {
     local file_name=$1
    
-    absolute_path=$(readlink -f "$file_name") #gives abolute path
-    if [ -d "$absolute_path" ]; then { #checks for directory 
+    if [ -d "$file_name" ]; then { #checks for directory 
         re_try $file_name $input
     } 
-    elif [ -e "$absolute_path" ]; then { #check for files
+    elif [ -e "$file_name" ]; then { #check for files
         re_try $file_name $input
     }
     else 
-       echo -e "\nNo file or Directory name $file_name"
-       echo -e "\n.....Creating new File or Directory name $file_name" 
+       echo -e "\nNo file or Directory with path $file_name"
+       echo -e "\n.....Creating new File or Directory in path $file_name" 
     fi
 }
 
 re_try() { #this method return new file or directory name
    local file_name=$1
    local input=$2
-   echo -e "\nThe Directory or File with name $file_name already exists."
-   read -p "Re-enter Directory or File name: " file_name  
+   echo -e "\nThe Directory or File with path $file_name already exists."
+   read -p "Re-enter Directory or File name with different name or path: " file_name  
    operation_check $file_name $input
 }
 
-#error in this block
+
 #This method only validate files or Directory
 validate_file() {
-  local file_name=$1
-    absolute_path=$(readlink -f "$file_name") #gives abolute path
-    if [ -d "$absolute_path" ]; then { #checks for directory 
-        echo -e "\nThe Directory or File you are looking Exits."
+    local file_name=$1
+ 
+     if [ -d "$file_name" ]; then { #checks for directory 
+        echo -e "\nThe Directory with path $file_name exits."
         echo -e "Okay Performing Operation...."
     } 
-    elif [ -e "$absolute_path" ]; then { #check for files
-        echo -e "\nThe file with name $file_name already exists."
+    elif [ -e "$file_name" ]; then { #check for files
+        echo -e "\nThe file with path $file_name already exists."
         echo -e "Okay Performing Operation...."     
     } 
     else 
-      echo "The File or Directory you are looking does Exits."
+      echo -e "\nMissing File or Directory in path $file_name"
+      prompt_user
     fi
 }
-#error in this block
 
 #prompt user to continue or exits program
 prompt_user() {
@@ -181,6 +179,7 @@ prompt_user() {
     list_operation
   else 
     echo -e "\n\n\t\tThank You !! Let's meet again in Future.."
+    exit
   fi
 }
 
